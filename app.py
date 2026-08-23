@@ -2,9 +2,11 @@ import streamlit as st
 import prettymaps
 import osmnx as ox
 import matplotlib
-# Keep the headless backend
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
+# Bypass the infinite font-search loop!
+plt.rcParams['font.family'] = 'sans-serif'
 
 ox.settings.http_headers = {'User-Agent': 'RetroMapApp_Morocco/1.0'}
 ox.settings.overpass_endpoint = 'https://lz4.overpass-api.de/api/interpreter'
@@ -21,7 +23,6 @@ if st.button("Generate Map"):
             plot = prettymaps.plot(location, radius=map_radius, preset='heerhugowaard')
             fig = plt.gcf()
             
-            # THE FIX: Save as a flat PNG file first, then display the image
             image_path = "generated_map.png"
             fig.savefig(image_path, dpi=300, bbox_inches='tight')
             st.image(image_path)
