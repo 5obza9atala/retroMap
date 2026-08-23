@@ -3,9 +3,12 @@ import prettymaps
 import osmnx as ox
 import matplotlib.pyplot as plt
 
-# Swapped to the primary global OpenStreetMap server
-ox.settings.overpass_endpoint = 'https://overpass-api.de/api/interpreter'
-ox.settings.timeout = 180 
+# 1. Give your app a name so the server doesn't block it as a bot
+ox.settings.http_headers = {'User-Agent': 'RetroMapApp_Morocco/1.0'}
+
+# 2. Switch back to the ultra-fast French/German hybrid mirror
+ox.settings.overpass_endpoint = 'https://lz4.overpass-api.de/api/interpreter'
+ox.settings.timeout = 90 
 
 st.title("🗺️ Custom Retro Map Generator")
 
