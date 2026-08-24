@@ -6,6 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import re
+import random
 
 # Prevent font caching delays
 plt.rcParams['font.family'] = 'sans-serif'
@@ -19,11 +20,26 @@ st.set_page_config(page_title="Retro Map Generator", page_icon="🗺️")
 st.title("🗺️ Custom Retro Map Generator")
 st.write("Generate and download retro-styled vector maps for any location in the world.")
 
-# Input fields
-location_input = st.text_input(
-    "Enter City Name or Coordinates (lat, lon):", 
-    value="Chefchaouen, Morocco"
-)
+# 1. Master List of European Capitals
+EUROPEAN_CAPITALS = [
+    "Paris, France", "Berlin, Germany", "Madrid, Spain", "Rome, Italy", 
+    "London, UK", "Vienna, Austria", "Amsterdam, Netherlands", "Prague, Czechia", 
+    "Stockholm, Sweden", "Budapest, Hungary", "Warsaw, Poland", "Copenhagen, Denmark", 
+    "Oslo, Norway", "Helsinki, Finland", "Lisbon, Portugal", "Athens, Greece", 
+    "Dublin, Ireland", "Brussels, Belgium"
+]
+
+# 2. Pick 5 random capitals on app load (Uses session_state so it doesn't re-shuffle on every click)
+if 'random_capitals' not in st.session_state:
+    st.session_state.random_capitals = random.sample(EUROPEAN_CAPITALS, 5)
+
+# 3. Create a toggle for Dropdown vs Custom Text
+input_method = st.radio("How do you want to choose a location?", ["🌍 Choose a random Capital", "✍️ Type my own city"])
+
+if input_method == "🌍 Choose a random Capital":
+    location_input = st.selectbox("Select a capital from the list:", st.session_state.random_capitals)
+else:
+    location_input = st.text_input("Enter City Name or Coordinates (lat, lon):", value="Chefchaouen, Morocco")
 
 map_radius = st.slider(
     "Map Radius (Meters):", 
@@ -44,7 +60,7 @@ def parse_location(raw_input: str):
     return raw_input.strip()
 
 if st.button("Generate Map", type="primary"):
-    with st.spinner("Downloading spatial geometry and drawing map..."):
+    with st.spinner(f"Drawing map of {location_input}..."):
         try:
             target_location = parse_location(location_input)
             
@@ -67,7 +83,7 @@ if st.button("Generate Map", type="primary"):
             # Display image in Streamlit
             st.image(img_bytes, caption=f"Generated Map: {location_input}", use_container_width=True)
             
-            # Download Button
+            # Download Button appears right after the image!
             safe_filename = re.sub(r'[^a-zA-Z0-9_-]', '_', location_input).lower()
             st.download_button(
                 label="📥 Download Map (.png)",
