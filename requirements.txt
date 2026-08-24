@@ -1,4 +1,4 @@
 streamlit
-prettymaps
+git+https://github.com/marceloprates/prettymaps.git
 osmnx
 matplotlib
